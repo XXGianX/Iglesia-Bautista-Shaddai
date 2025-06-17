@@ -19,6 +19,18 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+.flash-message {
+  margin: 10px auto;
+  padding: 10px;
+  width: fit-content;
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
 
 h1, h2 {
   color: #2c3e50;
