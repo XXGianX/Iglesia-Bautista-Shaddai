@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iglesia Bautista Shaddai</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
   <style>
     nav ul {
       display: flex;
@@ -79,11 +80,11 @@
       <li><a href="#equipo">Equipo Pastoral</a></li>
       <li><a href="#contacto">Contacto</a></li>
       <li id="login-nav-item">
-        <form id="login-form" method="POST">
-          <label for="usuario">Usuario:</label>
-          <input type="text" id="usuario" name="usuario" required>
-          <label for="clave">Contraseña:</label>
-          <input type="password" id="clave" name="clave" required>
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <label for="username">Usuario:</label>
+          <input type="text" id="username" name="username" required>
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" name="password" required>
           <button type="submit">Ingresar</button>
         </form>
       </li>
@@ -98,10 +99,38 @@
     {% endif %}
   {% endwith %}
 
+  <button class="btn btn-donate" onclick="openDonationModal()">💝 Donar</button>
+
+  <div id="donationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Realizar Donación</h2>
+        <button class="close-btn" onclick="closeDonationModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="donation-methods">
+          {% for method in ['yape', 'plin', 'bcp', 'interbank', 'bbva', 'efectivo'] %}
+          <div class="donation-method" onclick="selectMethod('{{ method }}')">
+            <div class="method-icon {{ method }}">{{ method|upper }}</div>
+            <div class="method-info">
+              <h3>{{ method|capitalize }}</h3>
+              <p>{{ 'Donación en persona' if method == 'efectivo' else 'Transferencia o pago electrónico' }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDonationModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="processDonation()">Continuar</button>
+      </div>
+    </div>
+  </div>
+
   <section class="banner" id="inicio">
     <div class="banner-content">
       <h1>Bienvenido a Iglesia Bautista Shaddai</h1>
-      <p>Somos una comunidad de fe comprometida con compartir el amor de Dios y servir a nuestra comunidad.</p>
+      <p>Somos una comunidad de fe comprometida con compartir el amor de Dios y servir a nuestra comunidad. Te invitamos a unirte a nosotros en nuestro próximo servicio.</p>
       <a href="#servicios" class="btn">Horarios de Servicios</a>
     </div>
   </section>
@@ -110,8 +139,8 @@
     <section class="section" id="nosotros">
       <h2 class="section-title">Quiénes Somos</h2>
       <div class="announcements">
-        <p>Nuestra iglesia se fundó con la misión de crear un espacio acogedor donde todos puedan experimentar el amor de Dios y crecer en su fe.</p>
-        <p>Durante más de 27 años, hemos servido a nuestra comunidad a través de diversos ministerios y actividades.</p>
+        <p>Nuestra iglesia se fundó con la misión de crear un espacio acogedor donde todos puedan experimentar el amor de Dios y crecer en su fe. Durante más de 27 años, hemos servido a nuestra comunidad a través de diversos ministerios y actividades.</p>
+        <p>Creemos en la importancia de la comunidad, el servicio y el crecimiento espiritual. Nuestra visión es ser una iglesia que transforma vidas y restaura familias a través del mensaje del evangelio.</p>
         <p>Todos son bienvenidos en nuestra comunidad, sin importar su origen, pasado o circunstancias actuales.</p>
       </div>
     </section>
@@ -120,21 +149,21 @@
       <h2 class="section-title">Nuestros Servicios</h2>
       <div class="services">
         <div class="service-card">
-          <img src="static/images/servicio-dominical.jpg" alt="Servicio Dominical">
+          <img src="{{ url_for('static', filename='images/servicio-dominical.jpg') }}" alt="Servicio Dominical">
           <div>
             <h3>Servicio Dominical</h3>
             <p><strong>Horario:</strong> Domingos 10:00 AM</p>
           </div>
         </div>
         <div class="service-card">
-          <img src="static/images/estudio-biblico.jpg" alt="Estudio Bíblico">
+          <img src="{{ url_for('static', filename='images/estudio-biblico.jpg') }}" alt="Estudio Bíblico">
           <div>
             <h3>Estudio Bíblico</h3>
             <p><strong>Horario:</strong> Miércoles 7:00 PM</p>
           </div>
         </div>
         <div class="service-card">
-          <img src="static/images/jovenes.jpg" alt="Reunión de Jóvenes">
+          <img src="{{ url_for('static', filename='images/jovenes.jpg') }}" alt="Reunión de Jóvenes">
           <div>
             <h3>Reunión de Jóvenes</h3>
             <p><strong>Horario:</strong> Viernes 7:00 PM</p>
@@ -158,7 +187,7 @@
       <h2 class="section-title">Nuestro Equipo Pastoral</h2>
       <div class="team">
         <div class="team-member">
-          <img src="static/images/pastor.jpg" alt="Pastor Crisólogo Enríquez">
+          <img src="{{ url_for('static', filename='images/pastor.jpg') }}" alt="Pastor Crisólogo Enríquez">
           <p class="team-name">Crisólogo Enríquez</p>
           <p class="team-role">Pastor Principal</p>
         </div>
@@ -168,7 +197,7 @@
     <section class="section" id="contacto">
       <h2 class="section-title">Contáctanos</h2>
       <div class="contact-info">
-        <p>Estamos aquí para responder tus preguntas y ayudarte a conectar con nuestra comunidad.</p>
+        <p>Estamos aquí para ayudarte a conectar con nuestra comunidad.</p>
         <div class="contact-methods">
           <div class="contact-method">
             <h3>📍 Dirección</h3>
@@ -183,6 +212,9 @@
             <p>info@iglesiabautistashaddai.org</p>
           </div>
         </div>
+        <div class="map">
+          <iframe src="https://www.google.com/maps/embed?pb=!4v1747178854463!..." width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
       </div>
     </section>
   </main>
@@ -192,17 +224,36 @@
       <div class="footer-section">
         <h3>Iglesia Bautista Shaddai</h3>
         <p>Un lugar de fe, esperanza y amor donde todos son bienvenidos.</p>
+        <div class="social-links">
+          <a href="#">FB</a><a href="#">IG</a><a href="#">YT</a>
+        </div>
       </div>
       <div class="footer-section">
         <h3>Horarios</h3>
-        <p><strong>Servicio Dominical:</strong> 10:00 AM</p>
-        <p><strong>Estudio Bíblico:</strong> Miércoles 7:00 PM</p>
-        <p><strong>Jóvenes:</strong> Viernes 7:00 PM</p>
+        <p><strong>Domingo:</strong> 10:00 AM</p>
+        <p><strong>Miércoles:</strong> 7:00 PM</p>
+        <p><strong>Viernes:</strong> 7:00 PM</p>
       </div>
     </div>
     <div class="copyright">
       <p>© 2025 Iglesia Bautista Shaddai. Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      if (username === 'crisologo' && password === '123456') {
+        alert('¡Login exitoso! Redirigiendo...');
+        window.location.href = "{{ url_for('index') }}";
+      } else {
+        alert('Usuario o contraseña incorrectos.');
+        document.getElementById('username').focus();
+      }
+    }
+  </script>
 </body>
 </html>
+
