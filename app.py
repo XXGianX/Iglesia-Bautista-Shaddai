@@ -11,6 +11,7 @@ app.secret_key = "clave_secreta_super_segura"
 
 Base = declarative_base()
 
+# ==== ENUMS ====
 class CategoriaItem(enum.Enum):
     MUEBLE = "Mueble"
     ELECTRONICO = "Electrónico"
@@ -28,6 +29,7 @@ class TipoCompra(enum.Enum):
     DONADO = "Donado"
     COMPRADO = "Comprado"
 
+# ==== MODELO ====
 class Item(Base):
     __tablename__ = 'items'
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -42,10 +44,12 @@ class Item(Base):
     responsable = Column(String)
     tipo_compra = Column(SQLAlchemyEnum(TipoCompra), nullable=False)
 
+# ==== BASE DE DATOS ====
 engine = create_engine('sqlite:///inventario_web.db')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
+# ==== RUTAS ====
 @app.route('/', methods=['GET', 'POST'])
 def index():
     session = Session()
@@ -164,11 +168,18 @@ def api_estadisticas():
             data['tipos_compra_valores'].append(sum(i.valor_unitario * i.cantidad for i in items if i.valor_unitario))
             data['tipos_compra_cantidades_items'].append(sum(i.cantidad for i in items))
 
+        # 🟢 Totales agregados para frontend
+        todos = session.query(Item).all()
+        data['gran_total_valor'] = sum(i.valor_unitario * i.cantidad for i in todos if i.valor_unitario)
+        data['gran_total_cantidad_items'] = sum(i.cantidad for i in todos)
+        data['total_categorias_activas'] = session.query(Item.categoria).distinct().count()
+
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
 
+# ==== MAIN ====
 if __name__ == '__main__':
     app.run(debug=True)
