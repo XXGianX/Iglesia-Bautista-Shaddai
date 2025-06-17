@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iglesia Bautista Shaddai</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    nav ul {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #login-nav-item {
+      margin-left: 20px;
+    }
+
+    #login-form {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    #login-form label {
+      margin-right: 5px;
+      font-size: 0.9em;
+    }
+
+    #login-form input[type="text"],
+    #login-form input[type="password"] {
+      padding: 4px;
+      margin-right: 6px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+
+    #login-form button {
+      padding: 4px 10px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.85em;
+    }
+
+    #login-form button:hover {
+      background-color: #4cae4c;
+    }
+
+    .flash-message {
+      margin: 10px auto;
+      padding: 10px;
+      width: fit-content;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Iglesia Bautista Shaddai</div>
+    <p>Un lugar de fe, esperanza y amor</p>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#eventos">Eventos</a></li>
+      <li><a href="#equipo">Equipo Pastoral</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li id="login-nav-item">
+        <form id="login-form" method="POST">
+          <label for="usuario">Usuario:</label>
+          <input type="text" id="usuario" name="usuario" required>
+          <label for="clave">Contraseña:</label>
+          <input type="password" id="clave" name="clave" required>
+          <button type="submit">Ingresar</button>
+        </form>
+      </li>
+    </ul>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-message">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <section class="banner" id="inicio">
+    <div class="banner-content">
+      <h1>Bienvenido a Iglesia Bautista Shaddai</h1>
+      <p>Somos una comunidad de fe comprometida con compartir el amor de Dios y servir a nuestra comunidad.</p>
+      <a href="#servicios" class="btn">Horarios de Servicios</a>
+    </div>
+  </section>
+
+  <main>
+    <section class="section" id="nosotros">
+      <h2 class="section-title">Quiénes Somos</h2>
+      <div class="announcements">
+        <p>Nuestra iglesia se fundó con la misión de crear un espacio acogedor donde todos puedan experimentar el amor de Dios y crecer en su fe.</p>
+        <p>Durante más de 27 años, hemos servido a nuestra comunidad a través de diversos ministerios y actividades.</p>
+        <p>Todos son bienvenidos en nuestra comunidad, sin importar su origen, pasado o circunstancias actuales.</p>
+      </div>
+    </section>
+
+    <section class="section" id="servicios">
+      <h2 class="section-title">Nuestros Servicios</h2>
+      <div class="services">
+        <div class="service-card">
+          <img src="static/images/servicio-dominical.jpg" alt="Servicio Dominical">
+          <div>
+            <h3>Servicio Dominical</h3>
+            <p><strong>Horario:</strong> Domingos 10:00 AM</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <img src="static/images/estudio-biblico.jpg" alt="Estudio Bíblico">
+          <div>
+            <h3>Estudio Bíblico</h3>
+            <p><strong>Horario:</strong> Miércoles 7:00 PM</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <img src="static/images/jovenes.jpg" alt="Reunión de Jóvenes">
+          <div>
+            <h3>Reunión de Jóvenes</h3>
+            <p><strong>Horario:</strong> Viernes 7:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="eventos">
+      <h2 class="section-title">Próximos Eventos</h2>
+      <div class="announcements">
+        <div class="announcement">
+          <h3>Misa Especial de Acción de Gracias</h3>
+          <p class="announcement-date">15 de Mayo, 2025</p>
+          <p>Te invitamos a nuestra misa especial de acción de gracias donde celebraremos las bendiciones recibidas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="equipo">
+      <h2 class="section-title">Nuestro Equipo Pastoral</h2>
+      <div class="team">
+        <div class="team-member">
+          <img src="static/images/pastor.jpg" alt="Pastor Crisólogo Enríquez">
+          <p class="team-name">Crisólogo Enríquez</p>
+          <p class="team-role">Pastor Principal</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contacto">
+      <h2 class="section-title">Contáctanos</h2>
+      <div class="contact-info">
+        <p>Estamos aquí para responder tus preguntas y ayudarte a conectar con nuestra comunidad.</p>
+        <div class="contact-methods">
+          <div class="contact-method">
+            <h3>📍 Dirección</h3>
+            <p>Calle Principal #123<br>Ciudad, CP 12345</p>
+          </div>
+          <div class="contact-method">
+            <h3>📞 Teléfono</h3>
+            <p>958 685 460</p>
+          </div>
+          <div class="contact-method">
+            <h3>✉️ Email</h3>
+            <p>info@iglesiabautistashaddai.org</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Iglesia Bautista Shaddai</h3>
+        <p>Un lugar de fe, esperanza y amor donde todos son bienvenidos.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Horarios</h3>
+        <p><strong>Servicio Dominical:</strong> 10:00 AM</p>
+        <p><strong>Estudio Bíblico:</strong> Miércoles 7:00 PM</p>
+        <p><strong>Jóvenes:</strong> Viernes 7:00 PM</p>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>© 2025 Iglesia Bautista Shaddai. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>
