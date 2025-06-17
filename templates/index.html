@@ -247,7 +247,7 @@
       const password = document.getElementById('password').value;
       if (username === 'crisologo' && password === '123456') {
         alert('¡Login exitoso! Redirigiendo...');
-        window.location.href = "{{ url_for('index') }}";
+        window.location.href = "{{ url_for('inventario') }}";
       } else {
         alert('Usuario o contraseña incorrectos.');
         document.getElementById('username').focus();
