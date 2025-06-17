@@ -1,6 +1,15 @@
-<!-- templates/estadisticas.html -->
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Estadísticas{% endblock %}
+
 {% block content %}
-<h2>Estadísticas</h2>
-<p>Gráficos y resumen del inventario.</p>
+  <h2>📊 Estadísticas del Inventario</h2>
+
+  <div id="stats">
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <div class="form-actions" style="margin-top: 2rem;">
+    <a href="{{ url_for('index') }}" class="btn-secondary">← Volver al Inventario</a>
+  </div>
 {% endblock %}
