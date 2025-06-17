@@ -1,6 +1,70 @@
-<!-- templates/editar.html -->
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Editar Ítem{% endblock %}
+
 {% block content %}
-<h2>Editar ítem</h2>
-<p>Formulario para editar un ítem.</p>
+  <h2>Editar Ítem</h2>
+  <form method="POST">
+    <div class="form-row">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" value="{{ item.nombre }}" required>
+    </div>
+
+    <div class="form-row">
+      <label for="descripcion">Descripción</label>
+      <input type="text" id="descripcion" name="descripcion" value="{{ item.descripcion }}">
+    </div>
+
+    <div class="form-row">
+      <label for="cantidad">Cantidad</label>
+      <input type="number" id="cantidad" name="cantidad" min="1" value="{{ item.cantidad }}">
+    </div>
+
+    <div class="form-row">
+      <label for="valor_unitario">Valor Unitario</label>
+      <input type="number" id="valor_unitario" name="valor_unitario" step="0.01" value="{{ item.valor_unitario }}">
+    </div>
+
+    <div class="form-row">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria" required>
+        {% for cat in categorias %}
+          <option value="{{ cat.value }}" {% if cat == item.categoria %}selected{% endif %}>{{ cat.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="estado">Estado</label>
+      <select id="estado" name="estado">
+        {% for estado in estados %}
+          <option value="{{ estado.value }}" {% if estado == item.estado %}selected{% endif %}>{{ estado.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="responsable">Responsable</label>
+      <input type="text" id="responsable" name="responsable" value="{{ item.responsable }}">
+    </div>
+
+    <div class="form-row">
+      <label for="ubicacion">Ubicación</label>
+      <input type="text" id="ubicacion" name="ubicacion" value="{{ item.ubicacion }}">
+    </div>
+
+    <div class="form-row">
+      <label for="tipo_compra">Tipo de Compra</label>
+      <select id="tipo_compra" name="tipo_compra">
+        {% for tipo in tipos_compra %}
+          <option value="{{ tipo.value }}" {% if tipo == item.tipo_compra %}selected{% endif %}>{{ tipo.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('index') }}" class="btn-secondary">← Volver</a>
+      <button type="submit" class="btn-primary">Guardar Cambios</button>
+    </div>
+  </form>
 {% endblock %}
