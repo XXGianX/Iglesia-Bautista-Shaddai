@@ -239,21 +239,6 @@
       <p>© 2025 Iglesia Bautista Shaddai. Todos los derechos reservados.</p>
     </div>
   </footer>
-
-  <script>
-    function handleLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      if (username === 'crisologo' && password === '123456') {
-        alert('¡Login exitoso! Redirigiendo...');
-        window.location.href = "{{ url_for('inventario') }}";
-      } else {
-        alert('Usuario o contraseña incorrectos.');
-        document.getElementById('username').focus();
-      }
-    }
-  </script>
 </body>
 </html>
 
