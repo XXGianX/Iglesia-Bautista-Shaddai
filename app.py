@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from sqlalchemy import create_engine, Column, String, Integer, Float, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.orm.exc import NoResultFound
@@ -6,12 +6,13 @@ import enum
 import uuid
 from datetime import datetime
 
+# Configuración
 app = Flask(__name__)
 app.secret_key = "clave_secreta_super_segura"
 
 Base = declarative_base()
 
-# ==== ENUMS ====
+# Enums para las opciones
 class CategoriaItem(enum.Enum):
     MUEBLE = "Mueble"
     ELECTRONICO = "Electrónico"
@@ -29,7 +30,7 @@ class TipoCompra(enum.Enum):
     DONADO = "Donado"
     COMPRADO = "Comprado"
 
-# ==== MODELO ====
+# Modelo de datos
 class Item(Base):
     __tablename__ = 'items'
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -44,15 +45,32 @@ class Item(Base):
     responsable = Column(String)
     tipo_compra = Column(SQLAlchemyEnum(TipoCompra), nullable=False)
 
-# ==== BASE DE DATOS ====
+# Base de datos SQLite
 engine = create_engine('sqlite:///inventario_web.db')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-# ==== RUTAS ====
+# Página de inicio con login
 @app.route('/', methods=['GET', 'POST'])
-def index():
-    session = Session()
+def inicio():
+    if request.method == 'POST':
+        usuario = request.form.get('usuario')
+        clave = request.form.get('clave')
+
+        if usuario == 'crisologo' and clave == '123456':
+            session['usuario'] = usuario
+            return redirect(url_for('inventario'))
+        else:
+            flash("Usuario o contraseña incorrectos", "error")
+    return render_template('index.html')
+
+# Sistema de inventario
+@app.route('/inventario', methods=['GET', 'POST'])
+def inventario():
+    if 'usuario' not in session:
+        return redirect(url_for('inicio'))
+
+    session_db = Session()
     if request.method == 'POST':
         try:
             nuevo_item = Item(
@@ -66,28 +84,32 @@ def index():
                 responsable=request.form.get('responsable', ''),
                 tipo_compra=TipoCompra(request.form.get('tipo_compra', TipoCompra.COMPRADO.value))
             )
-            session.add(nuevo_item)
-            session.commit()
+            session_db.add(nuevo_item)
+            session_db.commit()
             flash("Ítem agregado con éxito", "success")
         except Exception as e:
-            session.rollback()
+            session_db.rollback()
             flash(f"Error al agregar: {e}", "error")
         finally:
-            session.close()
-        return redirect(url_for('index'))
+            session_db.close()
+        return redirect(url_for('inventario'))
 
-    items = session.query(Item).order_by(Item.nombre).all()
-    session.close()
-    return render_template('index.html', items=items, categorias=CategoriaItem, estados=EstadoItem, tipos_compra=TipoCompra)
+    items = session_db.query(Item).order_by(Item.nombre).all()
+    session_db.close()
+    return render_template('inventario.html', items=items, categorias=CategoriaItem, estados=EstadoItem, tipos_compra=TipoCompra)
 
+# Editar ítems
 @app.route('/editar/<item_id>', methods=['GET', 'POST'])
 def editar(item_id):
-    session = Session()
-    item = session.query(Item).filter_by(id=item_id).first()
+    if 'usuario' not in session:
+        return redirect(url_for('inicio'))
+
+    session_db = Session()
+    item = session_db.query(Item).filter_by(id=item_id).first()
     if not item:
-        session.close()
+        session_db.close()
         flash("Ítem no encontrado", "error")
-        return redirect(url_for('index'))
+        return redirect(url_for('inventario'))
 
     if request.method == 'POST':
         try:
@@ -100,43 +122,54 @@ def editar(item_id):
             item.estado = EstadoItem(request.form.get('estado', EstadoItem.DISPONIBLE.value))
             item.responsable = request.form.get('responsable', '')
             item.tipo_compra = TipoCompra(request.form.get('tipo_compra', TipoCompra.COMPRADO.value))
-            session.commit()
+            session_db.commit()
             flash("Ítem actualizado correctamente", "success")
         except Exception as e:
-            session.rollback()
+            session_db.rollback()
             flash(f"Error al actualizar ítem: {e}", "error")
         finally:
-            session.close()
-        return redirect(url_for('index'))
+            session_db.close()
+        return redirect(url_for('inventario'))
 
-    session.close()
+    session_db.close()
     return render_template('editar.html', item=item, categorias=CategoriaItem, estados=EstadoItem, tipos_compra=TipoCompra)
 
+# Eliminar ítems
 @app.route('/eliminar/<item_id>', methods=['POST'])
 def eliminar(item_id):
-    session = Session()
+    if 'usuario' not in session:
+        return redirect(url_for('inicio'))
+
+    session_db = Session()
     try:
-        item = session.query(Item).filter_by(id=item_id).first()
+        item = session_db.query(Item).filter_by(id=item_id).first()
         if item:
-            session.delete(item)
-            session.commit()
+            session_db.delete(item)
+            session_db.commit()
             flash("Ítem eliminado correctamente", "success")
         else:
             flash("Ítem no encontrado", "error")
     except Exception as e:
-        session.rollback()
+        session_db.rollback()
         flash(f"Error al eliminar ítem: {e}", "error")
     finally:
-        session.close()
-    return redirect(url_for('index'))
+        session_db.close()
+    return redirect(url_for('inventario'))
 
+# Página de estadísticas
 @app.route('/estadisticas')
 def estadisticas():
+    if 'usuario' not in session:
+        return redirect(url_for('inicio'))
     return render_template('estadisticas.html')
 
+# API de estadísticas para gráficos
 @app.route('/api/estadisticas')
 def api_estadisticas():
-    session = Session()
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+
+    session_db = Session()
     try:
         data = {
             'categorias_nombres': [],
@@ -151,35 +184,35 @@ def api_estadisticas():
         }
 
         for cat in CategoriaItem:
-            items = session.query(Item).filter_by(categoria=cat).all()
+            items = session_db.query(Item).filter_by(categoria=cat).all()
             data['categorias_nombres'].append(cat.value)
             data['categorias_valores'].append(sum(i.valor_unitario * i.cantidad for i in items if i.valor_unitario))
             data['categorias_cantidades_items'].append(sum(i.cantidad for i in items))
 
         for est in EstadoItem:
-            items = session.query(Item).filter_by(estado=est).all()
+            items = session_db.query(Item).filter_by(estado=est).all()
             data['estados_nombres'].append(est.value)
             data['estados_valores'].append(sum(i.valor_unitario * i.cantidad for i in items if i.valor_unitario))
             data['estados_cantidades_items'].append(sum(i.cantidad for i in items))
 
         for tipo in TipoCompra:
-            items = session.query(Item).filter_by(tipo_compra=tipo).all()
+            items = session_db.query(Item).filter_by(tipo_compra=tipo).all()
             data['tipos_compra_nombres'].append(tipo.value)
             data['tipos_compra_valores'].append(sum(i.valor_unitario * i.cantidad for i in items if i.valor_unitario))
             data['tipos_compra_cantidades_items'].append(sum(i.cantidad for i in items))
-
-        # 🟢 Totales agregados para frontend
-        todos = session.query(Item).all()
-        data['gran_total_valor'] = sum(i.valor_unitario * i.cantidad for i in todos if i.valor_unitario)
-        data['gran_total_cantidad_items'] = sum(i.cantidad for i in todos)
-        data['total_categorias_activas'] = session.query(Item.categoria).distinct().count()
 
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        session.close()
+        session_db.close()
 
-# ==== MAIN ====
+# Cerrar sesión
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('inicio'))
+
+# Ejecutar app
 if __name__ == '__main__':
     app.run(debug=True)
