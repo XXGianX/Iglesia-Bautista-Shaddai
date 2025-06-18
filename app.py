@@ -46,7 +46,7 @@ class Item(Base):
     tipo_compra = Column(SQLAlchemyEnum(TipoCompra), nullable=False)
 
 # Base de datos SQLite
-engine = create_engine('sqlite:///inventario_web.db')
+engine = create_engine('postgresql://inventario_db_wfvw_user:smimBiWfAvcXNckdabcl3omz5ceorVla@dpg-d190a27diees73acia6g-a.ohio-postgres.render.com/inventario_db_wfvw')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
