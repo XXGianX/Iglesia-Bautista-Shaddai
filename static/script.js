@@ -15,43 +15,123 @@ function confirmarEliminacion(nombreItem) {
 let selectedMethod = '';
 
 function openDonationModal() {
-    document.getElementById('donationModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+  document.getElementById('donationModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
 }
 
 function closeDonationModal() {
-    document.getElementById('donationModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    resetSelection();
+  document.getElementById('donationModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+  selectedMethod = '';
+  const cards = document.querySelectorAll('.donation-method');
+  cards.forEach(card => card.classList.remove('selected'));
 }
 
 function selectMethod(method) {
-    selectedMethod = method;
-    document.querySelectorAll('.donation-method').forEach(card => {
-        card.classList.remove('selected');
-    });
-    const selectedCard = event.target.closest('.donation-method');
-    if (selectedCard) {
-        selectedCard.classList.add('selected');
-    }
+  selectedMethod = method;
+
+  const cards = document.querySelectorAll('.donation-method');
+  cards.forEach(card => card.classList.remove('selected'));
+
+  event.target.closest('.donation-method').classList.add('selected');
+}
+
+function getQRImageUrl(method) {
+  const urls = {
+    'yape': '/static/images/qr-yape.png',
+    'plin': '/static/images/qr-plin.png'
+  };
+  return urls[method] || '';
+}
+
+function getMethodName(method) {
+  const names = {
+    'yape': 'Yape',
+    'plin': 'Plin',
+    'bcp': 'BCP',
+    'interbank': 'Interbank',
+    'bbva': 'BBVA',
+    'efectivo': 'Efectivo'
+  };
+  return names[method] || method;
 }
 
 function processDonation() {
-    if (!selectedMethod) {
-        alert('Por favor selecciona un método de pago.');
-        return;
-    }
+  if (!selectedMethod) {
+    alert('Por favor selecciona un método de pago.');
+    return;
+  }
 
-    let message = `¡Gracias por tu donación mediante ${selectedMethod.toUpperCase()}! 🙌`;
-    alert(message);
-    closeDonationModal();
+  let message = `Método seleccionado: ${getMethodName(selectedMethod)}\n\n`;
+
+  switch (selectedMethod) {
+    case 'yape':
+    case 'plin':
+      message += `1. Abre tu app ${getMethodName(selectedMethod)}\n`;
+      message += `2. Escanea el código QR o usa el número: 958-685-460\n`;
+      message += `3. Ingresa el monto y escribe "Donación Iglesia Shaddai"\n`;
+      showQRModal(message, getQRImageUrl(selectedMethod));
+      break;
+    case 'bcp':
+      message += '1. Cuenta BCP: 123-45678901-2-34\n2. A nombre de: Iglesia Bautista Shaddai\n';
+      message += '3. Ingresa el monto y en concepto: "Donación"';
+      alert(message);
+      break;
+    case 'interbank':
+      message += '1. Cuenta Interbank: 987-65432109-8-76\n2. A nombre de: Iglesia Bautista Shaddai\n';
+      message += '3. Ingresa el monto y en concepto: "Donación"';
+      alert(message);
+      break;
+    case 'bbva':
+      message += '1. Cuenta BBVA: 456-78912345-6-78\n2. A nombre de: Iglesia Bautista Shaddai\n';
+      message += '3. Ingresa el monto y en concepto: "Donación"';
+      alert(message);
+      break;
+    case 'efectivo':
+      message += '1. Puedes entregar tu donación durante los servicios\n';
+      message += '2. O depositarla en las urnas de ofrenda';
+      alert(message);
+      break;
+  }
+
+  closeDonationModal();
 }
 
-function resetSelection() {
-    selectedMethod = '';
-    document.querySelectorAll('.donation-method').forEach(card => {
-        card.classList.remove('selected');
-    });
+// Modal QR personalizado
+function showQRModal(message, qrUrl) {
+  const existing = document.getElementById('qrModal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'qrModal';
+  modal.className = 'modal';
+  modal.style.display = 'block';
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Gracias por tu Donación 🙏</h2>
+        <button class="close-btn" onclick="closeQRModal()">×</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        ${qrUrl ? `<img src="${qrUrl}" style="max-width: 250px; margin-bottom: 1rem;" alt="Código QR">` : ''}
+        <pre style="text-align: left; white-space: pre-wrap;">${message}</pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeQRModal()">Cerrar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeQRModal() {
+  const modal = document.getElementById('qrModal');
+  if (modal) {
+    modal.remove();
+    document.body.style.overflow = 'auto';
+  }
 }
 // === Cargar estadísticas ===
 function cargarEstadisticas() {
