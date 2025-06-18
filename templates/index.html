@@ -107,7 +107,56 @@
       <button class="close-btn" onclick="closeDonationModal()">×</button>
     </div>
     <div class="modal-body">
-      <!-- Aquí tus métodos de donación como Yape, Plin, etc. -->
+      <div class="donation-methods">
+                    <div class="donation-method" onclick="selectMethod('yape')">
+                        <div class="method-icon yape">YAPE</div>
+                        <div class="method-info">
+                            <h3>Yape</h3>
+                            <p>Transferencia rápida desde tu app</p>
+                        </div>
+                    </div>
+                    
+                    <div class="donation-method" onclick="selectMethod('plin')">
+                        <div class="method-icon plin">PLIN</div>
+                        <div class="method-info">
+                            <h3>Plin</h3>
+                            <p>Pago inmediato con tu celular</p>
+                        </div>
+                    </div>
+                    
+                    <div class="donation-method" onclick="selectMethod('bcp')">
+                        <div class="method-icon bcp">BCP</div>
+                        <div class="method-info">
+                            <h3>BCP</h3>
+                            <p>Transferencia bancaria</p>
+                        </div>
+                    </div>
+                    
+                    <div class="donation-method" onclick="selectMethod('interbank')">
+                        <div class="method-icon interbank">IBK</div>
+                        <div class="method-info">
+                            <h3>Interbank</h3>
+                            <p>Transferencia interbancaria</p>
+                        </div>
+                    </div>
+                    
+                    <div class="donation-method" onclick="selectMethod('bbva')">
+                        <div class="method-icon bbva">BBVA</div>
+                        <div class="method-info">
+                            <h3>BBVA</h3>
+                            <p>Pago a través de BBVA</p>
+                        </div>
+                    </div>
+                    
+                    <div class="donation-method" onclick="selectMethod('efectivo')">
+                        <div class="method-icon efectivo">💵</div>
+                        <div class="method-info">
+                            <h3>Efectivo</h3>
+                            <p>Donación en persona</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
       <p>Selecciona un método de pago...</p>
     </div>
     <div class="modal-footer">
