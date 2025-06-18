@@ -100,33 +100,22 @@
   {% endwith %}
 
   <button class="btn btn-donate" onclick="openDonationModal()">💝 Donar</button>
-
-  <div id="donationModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Realizar Donación</h2>
-        <button class="close-btn" onclick="closeDonationModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <div class="donation-methods">
-          {% for method in ['yape', 'plin', 'bcp', 'interbank', 'bbva', 'efectivo'] %}
-          <div class="donation-method" onclick="selectMethod('{{ method }}')">
-            <div class="method-icon {{ method }}">{{ method|upper }}</div>
-            <div class="method-info">
-              <h3>{{ method|capitalize }}</h3>
-              <p>{{ 'Donación en persona' if method == 'efectivo' else 'Transferencia o pago electrónico' }}</p>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeDonationModal()">Cancelar</button>
-        <button class="btn btn-primary" onclick="processDonation()">Continuar</button>
-      </div>
+<div id="donationModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Realizar Donación</h2>
+      <button class="close-btn" onclick="closeDonationModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Aquí tus métodos de donación como Yape, Plin, etc. -->
+      <p>Selecciona un método de pago...</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeDonationModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="processDonation()">Continuar</button>
     </div>
   </div>
-
+</div>
   <section class="banner" id="inicio">
     <div class="banner-content">
       <h1>Bienvenido a Iglesia Bautista Shaddai</h1>
