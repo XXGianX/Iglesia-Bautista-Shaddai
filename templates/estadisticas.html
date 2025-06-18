@@ -1,15 +1,130 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estadísticas de Inventario</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 2rem;
+    }
 
-{% block title %}Estadísticas{% endblock %}
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
 
-{% block content %}
-  <h2>📊 Estadísticas del Inventario</h2>
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 2rem;
+    }
 
-  <div id="stats">
-    <p>Cargando estadísticas...</p>
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    canvas {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .btn-back {
+      display: inline-block;
+      margin-top: 2rem;
+      text-decoration: none;
+      background: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-back:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Estadísticas del Inventario</h1>
+
+    <div class="chart-grid">
+      <div>
+        <h3>Valor Total por Categoría</h3>
+        <canvas id="categoriaChart"></canvas>
+      </div>
+      <div>
+        <h3>Cantidad de Ítems por Estado</h3>
+        <canvas id="estadoChart"></canvas>
+      </div>
+      <div>
+        <h3>Cantidad por Tipo de Compra</h3>
+        <canvas id="compraChart"></canvas>
+      </div>
+    </div>
+
+    <a class="btn-back" href="{{ url_for('inventario') }}">← Volver al Inventario</a>
   </div>
 
-  <div class="form-actions" style="margin-top: 2rem;">
-    <a href="{{ url_for('index') }}" class="btn-secondary">← Volver al Inventario</a>
-  </div>
-{% endblock %}
+  <script>
+    fetch('/api/estadisticas')
+      .then(res => res.json())
+      .then(data => {
+        // Chart 1: Valor por Categoría
+        new Chart(document.getElementById('categoriaChart'), {
+          type: 'pie',
+          data: {
+            labels: data.categorias_nombres,
+            datasets: [{
+              label: 'Valor Total',
+              data: data.categorias_valores,
+              backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6']
+            }]
+          }
+        });
+
+        // Chart 2: Cantidad por Estado
+        new Chart(document.getElementById('estadoChart'), {
+          type: 'pie',
+          data: {
+            labels: data.estados_nombres,
+            datasets: [{
+              label: 'Cantidad',
+              data: data.estados_cantidades_items,
+              backgroundColor: ['#1abc9c', '#f39c12', '#c0392b', '#7f8c8d']
+            }]
+          }
+        });
+
+        // Chart 3: Cantidad por Tipo de Compra
+        new Chart(document.getElementById('compraChart'), {
+          type: 'pie',
+          data: {
+            labels: data.tipos_compra_nombres,
+            datasets: [{
+              label: 'Cantidad',
+              data: data.tipos_compra_cantidades_items,
+              backgroundColor: ['#2980b9', '#27ae60']
+            }]
+          }
+        });
+      })
+      .catch(error => {
+        alert("Error al cargar estadísticas: " + error);
+      });
+  </script>
+</body>
+</html>
