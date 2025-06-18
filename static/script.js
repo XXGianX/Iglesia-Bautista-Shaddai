@@ -12,7 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function confirmarEliminacion(nombreItem) {
   return confirm(`¿Estás seguro de eliminar el ítem "${nombreItem}"? Esta acción no se puede deshacer.`);
 }
+function openDonationModal() {
+    const modal = document.getElementById("donationModal");
+    modal.style.display = "block";
+}
 
+function closeDonationModal() {
+    const modal = document.getElementById("donationModal");
+    modal.style.display = "none";
+}
 // === Cargar estadísticas ===
 function cargarEstadisticas() {
   fetch('/api/estadisticas')
