@@ -12,14 +12,46 @@ document.addEventListener('DOMContentLoaded', () => {
 function confirmarEliminacion(nombreItem) {
   return confirm(`¿Estás seguro de eliminar el ítem "${nombreItem}"? Esta acción no se puede deshacer.`);
 }
+let selectedMethod = '';
+
 function openDonationModal() {
-    const modal = document.getElementById("donationModal");
-    modal.style.display = "block";
+    document.getElementById('donationModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
 function closeDonationModal() {
-    const modal = document.getElementById("donationModal");
-    modal.style.display = "none";
+    document.getElementById('donationModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    resetSelection();
+}
+
+function selectMethod(method) {
+    selectedMethod = method;
+    document.querySelectorAll('.donation-method').forEach(card => {
+        card.classList.remove('selected');
+    });
+    const selectedCard = event.target.closest('.donation-method');
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+}
+
+function processDonation() {
+    if (!selectedMethod) {
+        alert('Por favor selecciona un método de pago.');
+        return;
+    }
+
+    let message = `¡Gracias por tu donación mediante ${selectedMethod.toUpperCase()}! 🙌`;
+    alert(message);
+    closeDonationModal();
+}
+
+function resetSelection() {
+    selectedMethod = '';
+    document.querySelectorAll('.donation-method').forEach(card => {
+        card.classList.remove('selected');
+    });
 }
 // === Cargar estadísticas ===
 function cargarEstadisticas() {
