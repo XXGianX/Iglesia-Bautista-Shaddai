@@ -73,12 +73,12 @@ function processDonation() {
       showQRModal(message, getQRImageUrl(selectedMethod));
       break;
     case 'bcp':
-      message += '1. Cuenta BCP: 123-45678901-2-34\n2. A nombre de: Iglesia Bautista Shaddai\n';
+      message += '1. Cuenta BCP: 2157534935605 \n2. A nombre de: Iglesia Bautista Shaddai\n';
       message += '3. Ingresa el monto y en concepto: "Donación"';
       alert(message);
       break;
     case 'interbank':
-      message += '1. Cuenta Interbank: 987-65432109-8-76\n2. A nombre de: Iglesia Bautista Shaddai\n';
+      message += '1. Cuenta Interbank: 3003363171209\n2. A nombre de: Iglesia Bautista Shaddai\n';
       message += '3. Ingresa el monto y en concepto: "Donación"';
       alert(message);
       break;
