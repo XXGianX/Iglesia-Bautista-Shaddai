@@ -231,13 +231,13 @@
             }
         });
         // Chart: Income by Month
-        new Chart(document.getElementById('incomeMonthChart'), {
+        new Chart(document.getElementById('ingresosMesChart'), {
             type: 'bar',
             data: {
-                labels: data.months_labels,
+                labels: data.meses_labels,
                 datasets: [{
-                    label: 'Number of Items Received',
-                    data: data.months_quantity,
+                    label: 'Ingresos por Mes',
+                    data: data.meses_cantidad,
                     backgroundColor: '#8e44ad'
                 }]
             },
@@ -246,7 +246,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Monthly Item Receipts'
+                        text: 'Cantidad de Ítems Ingresados (Enero - Diciembre)'
                     }
                 }
             }
