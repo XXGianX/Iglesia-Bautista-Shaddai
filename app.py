@@ -212,6 +212,21 @@ def api_estadisticas():
         ]
         from collections import Counter
         from datetime import datetime
+        
+        # Conteo de ítems por mes de registro (enero a diciembre)
+        meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        
+        conteo_mensual = Counter()
+        for item in items:
+            try:
+                fecha = datetime.strptime(item.fecha_registro[:10], "%Y-%m-%d")
+                conteo_mensual[fecha.month] += 1
+            except:
+                continue
+        
+        data['meses_labels'] = meses
+        data['meses_cantidad'] = [conteo_mensual.get(i, 0) for i in range(1, 13)]
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
