@@ -84,12 +84,6 @@
           <h3>Tendencia de Cantidad por Estado</h3>
           <canvas id="lineaEstadoChart"></canvas>
       </div>
-      
-      <div>
-          <h3>Radar de Estados</h3>
-          <canvas id="radarEstadoChart"></canvas>
-      </div>
-      
       <div>
           <h3>Tipo de Compra por Estado</h3>
           <canvas id="apiladoTipoEstadoChart"></canvas>
@@ -99,7 +93,12 @@
           <h3>Distribución por Ubicación</h3>
           <canvas id="ubicacionChart"></canvas>
       </div>
+      <div>
+        <h3>Cantidad de Ítems Ingresados por Mes</h3>
+        <canvas id="ingresoMesChart"></canvas>
+      </div>
     </div>
+    
 
     <a class="btn-back" href="{{ url_for('inventario') }}">← Volver al Inventario</a>
   </div>
@@ -173,21 +172,7 @@
                 }]
             }
         });
-        
-        // Gráfico 6: Radar por Estado
-        new Chart(document.getElementById('radarEstadoChart'), {
-            type: 'radar',
-            data: {
-                labels: data.estados_nombres,
-                datasets: [{
-                    label: 'Cantidad',
-                    data: data.estados_cantidades_items,
-                    backgroundColor: 'rgba(46, 204, 113, 0.3)',
-                    borderColor: '#2ecc71'
-                }]
-            }
-        });
-        
+  
         // Gráfico 7: Barras Apiladas por Estado y Tipo de Compra
         const estados = data.estados_nombres;
         const tipos = data.tipos_compra_nombres;
@@ -243,6 +228,27 @@
                     data: Object.values(ubicacionesMap),
                     backgroundColor: '#2c3e50'
                 }]
+            }
+        });
+        // Chart: Income by Month
+        new Chart(document.getElementById('incomeMonthChart'), {
+            type: 'bar',
+            data: {
+                labels: data.months_labels,
+                datasets: [{
+                    label: 'Number of Items Received',
+                    data: data.months_quantity,
+                    backgroundColor: '#8e44ad'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Item Receipts'
+                    }
+                }
             }
         });
       })
