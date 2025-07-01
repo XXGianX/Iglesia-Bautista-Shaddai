@@ -210,6 +210,8 @@ def api_estadisticas():
                 'cantidad': item.cantidad
             } for item in items
         ]
+        from collections import Counter
+        from datetime import datetime
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
