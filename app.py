@@ -200,7 +200,16 @@ def api_estadisticas():
             data['tipos_compra_nombres'].append(tipo.value)
             data['tipos_compra_valores'].append(sum(i.valor_unitario * i.cantidad for i in items if i.valor_unitario))
             data['tipos_compra_cantidades_items'].append(sum(i.cantidad for i in items))
-
+            #AHORA
+            items = session_db.query(Item).all()
+            data['items'] = [
+                {
+                    'categoria': item.categoria.value,
+                    'estado': item.estado.value,
+                    'ubicacion': item.ubicacion,
+                    'cantidad': item.cantidad
+                } for item in items
+            ]
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
