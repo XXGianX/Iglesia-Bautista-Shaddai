@@ -74,6 +74,31 @@
         <h3>Cantidad por Tipo de Compra</h3>
         <canvas id="compraChart"></canvas>
       </div>
+      <!-- Nuevos Gráficos -->
+      <div>
+          <h3>Cantidad por Categoría</h3>
+          <canvas id="barraCategoriaChart"></canvas>
+      </div>
+      
+      <div>
+          <h3>Tendencia de Cantidad por Estado</h3>
+          <canvas id="lineaEstadoChart"></canvas>
+      </div>
+      
+      <div>
+          <h3>Radar de Estados</h3>
+          <canvas id="radarEstadoChart"></canvas>
+      </div>
+      
+      <div>
+          <h3>Tipo de Compra por Estado</h3>
+          <canvas id="apiladoTipoEstadoChart"></canvas>
+      </div>
+      
+      <div>
+          <h3>Distribución por Ubicación</h3>
+          <canvas id="ubicacionChart"></canvas>
+      </div>
     </div>
 
     <a class="btn-back" href="{{ url_for('inventario') }}">← Volver al Inventario</a>
@@ -120,6 +145,105 @@
               backgroundColor: ['#2980b9', '#27ae60']
             }]
           }
+        });
+        // Gráfico 4: Barras por Categoría
+        new Chart(document.getElementById('barraCategoriaChart'), {
+            type: 'bar',
+            data: {
+                labels: data.categorias_nombres,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: data.categorias_cantidades_items,
+                    backgroundColor: '#2980b9'
+                }]
+            }
+        });
+        
+        // Gráfico 5: Línea de Cantidad por Estado
+        new Chart(document.getElementById('lineaEstadoChart'), {
+            type: 'line',
+            data: {
+                labels: data.estados_nombres,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: data.estados_cantidades_items,
+                    borderColor: '#8e44ad',
+                    backgroundColor: 'rgba(142, 68, 173, 0.1)',
+                    fill: true
+                }]
+            }
+        });
+        
+        // Gráfico 6: Radar por Estado
+        new Chart(document.getElementById('radarEstadoChart'), {
+            type: 'radar',
+            data: {
+                labels: data.estados_nombres,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: data.estados_cantidades_items,
+                    backgroundColor: 'rgba(46, 204, 113, 0.3)',
+                    borderColor: '#2ecc71'
+                }]
+            }
+        });
+        
+        // Gráfico 7: Barras Apiladas por Estado y Tipo de Compra
+        const estados = data.estados_nombres;
+        const tipos = data.tipos_compra_nombres;
+        const base = {};
+        estados.forEach(est => base[est] = Array(tipos.length).fill(0));
+        data.items.forEach(item => {
+            const est = item.estado;
+            const tipo = item.tipo_compra;
+            const index = tipos.indexOf(tipo);
+            if (index !== -1 && base[est]) {
+                base[est][index] += item.cantidad;
+            }
+        });
+        const datasets = tipos.map((tipo, i) => ({
+            label: tipo,
+            data: estados.map(est => base[est][i]),
+            backgroundColor: ['#3498db', '#e67e22', '#f1c40f', '#9b59b6'][i % 4]
+        }));
+        new Chart(document.getElementById('apiladoTipoEstadoChart'), {
+            type: 'bar',
+            data: {
+                labels: estados,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: { 
+                    title: { 
+                        display: true, 
+                        text: 'Tipo de Compra por Estado' 
+                    } 
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true }
+                }
+            }
+        });
+        
+        // Gráfico 8: Pictograma por Ubicación (barras)
+        const ubicacionesMap = {};
+        data.items.forEach(i => {
+            const u = i.ubicacion || 'Sin ubicación';
+            if (!ubicacionesMap[u]) ubicacionesMap[u] = 0;
+            ubicacionesMap[u] += i.cantidad;
+        });
+        new Chart(document.getElementById('ubicacionChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(ubicacionesMap),
+                datasets: [{
+                    label: 'Cantidad',
+                    data: Object.values(ubicacionesMap),
+                    backgroundColor: '#2c3e50'
+                }]
+            }
         });
       })
       .catch(error => {
