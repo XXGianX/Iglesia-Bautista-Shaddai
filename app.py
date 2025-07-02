@@ -207,7 +207,8 @@ def api_estadisticas():
                 'categoria': item.categoria.value,
                 'estado': item.estado.value,
                 'ubicacion': item.ubicacion,
-                'cantidad': item.cantidad
+                'cantidad': item.cantidad,
+                'tipo_compra': item.tipo_compra.value
             } for item in items
         ]
         from collections import Counter
